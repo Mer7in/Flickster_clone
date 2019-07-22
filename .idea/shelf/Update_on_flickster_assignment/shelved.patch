@@ -1,0 +1,94 @@
+Index: app/src/main/java/com/example/flickster/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.flickster;\r\n\r\nimport android.annotation.SuppressLint;\r\nimport android.os.Bundle;\r\nimport android.util.Log;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.appcompat.app.AppCompatActivity;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.example.flickster.adapters.MoviesAdapter;\r\nimport com.example.flickster.models.Movie;\r\nimport com.loopj.android.http.AsyncHttpClient;\r\nimport com.loopj.android.http.JsonHttpResponseHandler;\r\n\r\nimport org.json.JSONArray;\r\nimport org.json.JSONException;\r\nimport org.json.JSONObject;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.List;\r\n\r\nimport cz.msebera.android.httpclient.Header;\r\n\r\npublic class MainActivity extends AppCompatActivity {\r\n\r\n    private  static final String MOVIE_URL = \"https://api.themoviedb.org/3/movie/now_playing?api_key=a07e22bc18f5cb106bfe4cc1f83ad8ed\";\r\n    List<Movie> movies;\r\n\r\n    @SuppressLint(\"WrongConstant\")\r\n    @Override\r\n    protected void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        setContentView(R.layout.activity_main);\r\n        RecyclerView rvMovies =findViewById(R.id.rvMovies);\r\n        Toast.makeText(this, \"App launch....\", Toast.LENGTH_SHORT).show();\r\n        final MoviesAdapter adapter = new MoviesAdapter(this, movies);\r\n        movies=new ArrayList<>();\r\n        rvMovies.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));\r\n        rvMovies.setAdapter(adapter);\r\n        AsyncHttpClient client = new AsyncHttpClient();\r\n        client.get(MOVIE_URL, new JsonHttpResponseHandler(){\r\n            @Override\r\n            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {\r\n                super.onSuccess(statusCode, headers, response);\r\n               try\r\n                {\r\n                    JSONArray movieJsonArray = response.getJSONArray(\"results\");\r\n                    movies.addAll(Movie.fromJsonArray(movieJsonArray));\r\n                    adapter.notifyDataSetChanged();\r\n                    Log.d(\"smile\", movies.toString());\r\n                } catch (JSONException e) {\r\n                    e.printStackTrace();\r\n                }\r\n            }\r\n\r\n            @Override\r\n            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {\r\n                super.onFailure(statusCode, headers, responseString, throwable);\r\n            }\r\n        });\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/flickster/MainActivity.java	(date 1563415497000)
++++ app/src/main/java/com/example/flickster/MainActivity.java	(date 1563419332525)
+@@ -3,7 +3,6 @@
+ import android.annotation.SuppressLint;
+ import android.os.Bundle;
+ import android.util.Log;
+-import android.widget.Toast;
+ 
+ import androidx.appcompat.app.AppCompatActivity;
+ import androidx.recyclerview.widget.LinearLayoutManager;
+@@ -34,25 +33,28 @@
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_main);
+         RecyclerView rvMovies =findViewById(R.id.rvMovies);
+-        Toast.makeText(this, "App launch....", Toast.LENGTH_SHORT).show();
+-        final MoviesAdapter adapter = new MoviesAdapter(this, movies);
+         movies=new ArrayList<>();
++        //Toast.makeText(this, "App launch....", Toast.LENGTH_SHORT).show();
++        final MoviesAdapter adapter = new MoviesAdapter(this, movies);
++
+         rvMovies.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.HORIZONTAL,false));
+         rvMovies.setAdapter(adapter);
+         AsyncHttpClient client = new AsyncHttpClient();
+         client.get(MOVIE_URL, new JsonHttpResponseHandler(){
+             @Override
+             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+-                super.onSuccess(statusCode, headers, response);
++                JSONArray  movieJsonArray = null;
+                try
+                 {
+-                    JSONArray movieJsonArray = response.getJSONArray("results");
++                    movieJsonArray = response.getJSONArray("results");
+                     movies.addAll(Movie.fromJsonArray(movieJsonArray));
+-                    adapter.notifyDataSetChanged();
+-                    Log.d("smile", movies.toString());
++
+                 } catch (JSONException e) {
+                     e.printStackTrace();
+                 }
++
++                adapter.notifyDataSetChanged();
++                Log.d("smile", movies.toString());
+             }
+ 
+             @Override
+Index: app/src/main/java/com/example/flickster/adapters/MoviesAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.flickster.adapters;\r\n\r\nimport android.content.Context;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.example.flickster.R;\r\nimport com.example.flickster.models.Movie;\r\n\r\nimport java.util.List;\r\n\r\npublic class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {\r\n    Context context;\r\n    List<Movie> movies;\r\n\r\n    public MoviesAdapter(Context context, List<Movie> movies) {\r\n        this.context = context;\r\n        this.movies = movies;\r\n    }\r\n\r\n    @NonNull\r\n    @Override\r\n    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {\r\n        View  view = LayoutInflater.from(context).inflate(R.layout.item_movie, parent,false);\r\n        return new ViewHolder(view);\r\n        \r\n    }\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {\r\n        Movie movie=movies.get(position);\r\n        holder.bind(movie);\r\n    }\r\n\r\n    @Override\r\n    public int getItemCount() {\r\n        return 0;\r\n    }\r\n\r\n    class ViewHolder extends RecyclerView.ViewHolder\r\n    {\r\n\r\n        TextView tvTitle;\r\n        TextView tvOverview;\r\n        ImageView ivPoster;\r\n        public ViewHolder(View itemView)\r\n        {\r\n            super(itemView);\r\n            tvTitle= itemView.findViewById(R.id.tvTitle);\r\n            ivPoster=itemView.findViewById(R.id.ivPoster);\r\n            tvOverview=itemView.findViewById(R.id.tvOverview);\r\n        }\r\n\r\n        public void bind(Movie movie) {\r\n            tvTitle.setText(movie.getTitle());\r\n            tvOverview.setText(movie.getOverview());\r\n            Glide.with(context).load(movie.getPosterPath()).into(ivPoster);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/example/flickster/adapters/MoviesAdapter.java	(date 1563415497000)
++++ app/src/main/java/com/example/flickster/adapters/MoviesAdapter.java	(date 1563418910664)
+@@ -16,6 +16,8 @@
+ 
+ import java.util.List;
+ 
++import static com.loopj.android.http.AsyncHttpClient.log;
++
+ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
+     Context context;
+     List<Movie> movies;
+@@ -28,6 +30,7 @@
+     @NonNull
+     @Override
+     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
++        log.d("smile","onCreativeViewHolder");
+         View  view = LayoutInflater.from(context).inflate(R.layout.item_movie, parent,false);
+         return new ViewHolder(view);
+         
+@@ -35,13 +38,14 @@
+ 
+     @Override
+     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
++        log.d("smile","onCreativeViewHolder"+position);
+         Movie movie=movies.get(position);
+         holder.bind(movie);
+     }
+ 
+     @Override
+     public int getItemCount() {
+-        return 0;
++        return movies.size();
+     }
+ 
+     class ViewHolder extends RecyclerView.ViewHolder
