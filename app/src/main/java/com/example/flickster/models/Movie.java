@@ -15,6 +15,7 @@ public class Movie {
     private String title;
     private String overview;
     private double voteAverage;
+    private int movieId;
     //empty constructor needed by the pacrcel library
     public Movie() {
     }
@@ -24,6 +25,7 @@ public class Movie {
         title = jsonObject.getString("title");
         overview = jsonObject.getString("overview");
         voteAverage=jsonObject.getDouble("vote_average");
+        movieId=jsonObject.getInt("id");
 
     }
 
@@ -54,5 +56,8 @@ public class Movie {
         return voteAverage;
     }
 
+    public int getMovieId() {
+        return movieId;
+    }
 }
 
